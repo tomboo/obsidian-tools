@@ -15,6 +15,8 @@ import sys
 from datetime import date
 from pathlib import Path
 
+DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parent.parent / "tmp"
+
 try:
     import frontmatter
 except ImportError:
@@ -303,7 +305,7 @@ Examples:
         "--output-dir", "-o",
         default=None,
         metavar="DIR",
-        help="Output directory for PDFs (default: /tmp/print_md/)",
+        help=f"Output directory for PDFs (default: {DEFAULT_OUTPUT_DIR})",
     )
     parser.add_argument(
         "--no-open",
@@ -330,7 +332,7 @@ Examples:
             fail += 1
             continue
 
-        out_dir = Path(args.output_dir) if args.output_dir else Path("/tmp/print_md")
+        out_dir = Path(args.output_dir) if args.output_dir else DEFAULT_OUTPUT_DIR
         out_dir.mkdir(parents=True, exist_ok=True)
 
         try:

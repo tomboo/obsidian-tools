@@ -8,5 +8,6 @@ __pycache__/
 *.pyc
 
 # Generated output
+tmp/
 *.pdf
 *.zip
