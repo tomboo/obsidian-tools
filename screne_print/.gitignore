@@ -1,0 +1,7 @@
+venv/
+tests/output*/
+__pycache__/
+*.pyc
+*.zip
+*.pdf
+.DS_Store
