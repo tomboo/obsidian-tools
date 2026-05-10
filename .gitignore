@@ -1,2 +1,12 @@
+# macOS
 .DS_Store
 .obsidian/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Generated output
+*.pdf
+*.zip

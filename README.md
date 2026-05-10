@@ -8,7 +8,7 @@ Utility scripts for working with Obsidian vaults.
 
 Convert Obsidian markdown scenes to print-ready PDFs.
 
-See [`screne_print/scene_print_README.md`](screne_print/scene_print_README.md) for full setup and usage.
+See [`scene_print/scene_print_README.md`](scene_print/scene_print_README.md) for full setup and usage.
 
 **Quick start:**
 
