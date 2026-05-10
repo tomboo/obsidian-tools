@@ -78,26 +78,25 @@ Go to **Settings → Shell commands → + New shell command**
 
 **Command 1 — Print Scene**
 ```
-python3 /Users/YOURNAME/scripts/scene_print/scene_print.py "{{file_path}}"
+/Users/YOURNAME/scripts/scene_print/venv/bin/python /Users/YOURNAME/scripts/scene_print/scene_print.py "{{file_path}}"
 ```
 - Alias: `Print Scene to PDF`
 - Assign hotkey: `Cmd+Shift+P` (or whatever feels right)
 
 **Command 2 — Print Scene (Double-spaced)**
 ```
-python3 /Users/YOURNAME/scripts/scene_print/scene_print.py "{{file_path}}" --double-space
+/Users/YOURNAME/scripts/scene_print/venv/bin/python /Users/YOURNAME/scripts/scene_print/scene_print.py "{{file_path}}" --double-space
 ```
 - Alias: `Print Scene to PDF (Double-spaced)`
 - Assign hotkey: `Cmd+Shift+D`
 
 **Command 3 — Print Scene (with frontmatter)**
 ```
-python3 /Users/YOURNAME/scripts/scene_print/scene_print.py "{{file_path}}" --frontmatter
+/Users/YOURNAME/scripts/scene_print/venv/bin/python /Users/YOURNAME/scripts/scene_print/scene_print.py "{{file_path}}" --frontmatter
 ```
 - Alias: `Print Scene to PDF (with Frontmatter)`
 
 > Replace `/Users/YOURNAME/scripts/` with the actual path to your script.
-> On Windows use `python` instead of `python3`.
 
 ### Shell Commands variables used
 | Variable | Expands to |
@@ -151,8 +150,7 @@ Check that the `.md` file is valid UTF-8 and has a proper YAML frontmatter block
 (or none at all — missing frontmatter is fine).
 
 **Shell Commands can't find Python**
-Use the full path to Python in the shell command:
+Make sure you're using the venv path as shown above. If the venv doesn't exist yet, run:
 ```bash
-/usr/local/bin/python3 /path/to/scene_print.py "{{file_path}}"
+cd /Users/YOURNAME/scripts/scene_print && python3 -m venv venv && venv/bin/pip install -r requirements.txt
 ```
-Find your Python path with: `which python3`
