@@ -28,6 +28,18 @@ pip3 install python-frontmatter markdown weasyprint
 
 > WeasyPrint may take a minute to install — it pulls in several rendering libraries.
 
+Or, for a self-contained install, create a local virtual environment:
+
+```bash
+git clone https://github.com/tomboo/vaults-scripts.git
+cd /path/to/vaults-scripts/print_md
+./install.sh
+```
+
+The installer creates `print_md/.venv/`, installs the requirements, verifies
+the imports, and prints the exact Obsidian Shell Commands entries for your
+machine.
+
 ### 2 — Save the script
 
 Put the `print_md/` folder somewhere permanent. Location doesn't matter as long as it won't accidentally get deleted. Good options:
