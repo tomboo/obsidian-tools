@@ -30,11 +30,15 @@ pip3 install python-frontmatter markdown weasyprint
 
 ### 2 — Save the script
 
-Put `scene_print.py` somewhere permanent. A dedicated folder works well:
+Put the `scene_print/` folder somewhere permanent. Location doesn't matter as long as it won't accidentally get deleted. Good options:
 
-```
-~/scripts/scene_print/scene_print.py
-```
+| Location | Good if… |
+|---|---|
+| `~/scripts/scene_print/` | You already have a general scripts folder |
+| `~/Documents/scene_print/` | You prefer keeping things in Documents |
+| Inside the Obsidian vault | You want everything in one place |
+
+Wherever you put it, update the path in the Shell Commands settings to match.
 
 ---
 
