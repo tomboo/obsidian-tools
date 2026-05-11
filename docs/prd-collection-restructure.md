@@ -1,6 +1,6 @@
-# PRD — Restructure `vaults-scripts` as a packaged collection
+# PRD — Restructure `obsidian-tools` as a packaged collection
 
-Tracking issue: [#4](https://github.com/tomboo/vaults-scripts/issues/4)
+Tracking issue: [#4](https://github.com/tomboo/obsidian-tools/issues/4)
 Status: Draft
 Last updated: 2026-05-10
 
@@ -44,7 +44,7 @@ Both audiences are comfortable running a single shell command; neither wants to 
 
 - **F1** — Each tool is installable in isolation with one command of the form:
   ```
-  uv tool install 'git+https://github.com/tomboo/vaults-scripts.git#subdirectory=tools/<name>'
+  uv tool install 'git+https://github.com/tomboo/obsidian-tools.git#subdirectory=tools/<name>'
   ```
 - **F2** — Each tool exposes a console script entry point (e.g. `print_md`) that lands on the user's `PATH` via `uv tool` / `pipx` shims.
 - **F3** — `print_md`'s entire CLI surface (`--frontmatter`/`-f`, `--double-space`/`-d`, `--output-dir`/`-o`, `--no-open`, default output `~/Downloads`) is preserved through the migration; no flag rename, no behaviour change.

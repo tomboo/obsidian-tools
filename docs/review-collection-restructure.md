@@ -1,6 +1,6 @@
 # Review — Collection restructure spec
 
-Reviewed: [#4](https://github.com/tomboo/vaults-scripts/issues/4), [PRD](./prd-collection-restructure.md), [Implementation plan](./implementation-plan-collection-restructure.md)
+Reviewed: [#4](https://github.com/tomboo/obsidian-tools/issues/4), [PRD](./prd-collection-restructure.md), [Implementation plan](./implementation-plan-collection-restructure.md)
 Reviewer: self-review pass
 Date: 2026-05-10
 

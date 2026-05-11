@@ -1,6 +1,6 @@
 # Implementation Plan — Collection restructure
 
-Tracking issue: [#4](https://github.com/tomboo/vaults-scripts/issues/4)
+Tracking issue: [#4](https://github.com/tomboo/obsidian-tools/issues/4)
 PRD: [prd-collection-restructure.md](./prd-collection-restructure.md)
 Status: Draft
 
@@ -67,7 +67,7 @@ The plan is sequenced so the repo stays usable at the end of every phase. Each p
 - `uv sync` from the repo root resolves and installs `print_md` editable.
 - `uv run --package print_md print_md tools/print_md/tests/fixtures/minimal.md --no-open --output-dir /tmp/print_md_smoke` produces a PDF without error.
 - `uv run --package print_md print_md --help` exits 0.
-- From a scratch directory: `uv tool install 'git+file:///Users/tom/Projects/vaults-scripts#subdirectory=tools/print_md'` succeeds and `print_md --help` works (when `~/.local/bin` is on `PATH` — `uv tool install` prints a `uv tool update-shell` hint if it isn't).
+- From a scratch directory: `uv tool install 'git+file:///Users/tom/Projects/obsidian-tools#subdirectory=tools/print_md'` succeeds and `print_md --help` works (when `~/.local/bin` is on `PATH` — `uv tool install` prints a `uv tool update-shell` hint if it isn't).
 - _Note:_ pytest validation deferred to Phase 1.5, which is when tests first exist.
 
 **Rollback:** revert the PR. No data is destroyed; the old layout is in Git history.
