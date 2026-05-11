@@ -15,7 +15,7 @@ import sys
 from datetime import date
 from pathlib import Path
 
-DEFAULT_OUTPUT_DIR = Path(__file__).resolve().parent.parent / "tmp"
+DEFAULT_OUTPUT_DIR = Path.home() / "Downloads"
 
 try:
     import frontmatter

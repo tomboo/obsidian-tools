@@ -73,7 +73,7 @@ python3 ~/scripts/print_md/print_md.py scenes/*.md
 python3 ~/scripts/print_md/print_md.py scenes/*.md --output-dir prints/
 ```
 
-The PDF is written to `scripts/tmp/` by default, keeping your vault folders clean.
+The PDF is written to `~/Downloads` by default, keeping your vault folders clean.
 
 ---
 
@@ -126,7 +126,7 @@ Do not wrap `{{file_path:absolute}}` in quotes. Shell Commands already escapes p
 
 ### After setup
 Open any `.md` scene file → `Cmd+P` → type "Print" → hit Enter.
-By default, PDFs are written to `scripts/tmp/`, keeping your vault folders
+By default, PDFs are written to `~/Downloads`, keeping your vault folders
 clean. Pass `--output-dir` if you want a different location.
 
 ---
@@ -155,9 +155,9 @@ If there is no `title` field, the filename is used in its place.
 
 | Scenario | PDF location |
 |---|---|
-| Default | `scripts/tmp/` |
+| Default | `~/Downloads` |
 | `--output-dir prints/` | Inside `prints/` relative to where you run the command |
-| Obsidian Shell Commands | `scripts/tmp/` |
+| Obsidian Shell Commands | `~/Downloads` |
 
 ---
 
