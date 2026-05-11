@@ -279,7 +279,7 @@ def convert_file(input_path: Path, output_dir: Path, double_space: bool, show_fr
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
-def main():
+def main(argv=None) -> int:
     parser = argparse.ArgumentParser(
         description="Convert Obsidian markdown files to print-ready PDFs.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -314,7 +314,7 @@ Examples:
         help="Don't open PDFs in Preview after conversion",
     )
     parser.set_defaults(open_after=True)
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     mode = "double-spaced" if args.double_space else "standard"
     print(f"\nprint_md  [{mode} mode]")
@@ -349,7 +349,9 @@ Examples:
     print(f"  Done — {ok} converted, {fail} failed.\n")
     if fail:
         print(f"print_md: {fail} file(s) failed — check the file path and format.", file=sys.stderr)
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

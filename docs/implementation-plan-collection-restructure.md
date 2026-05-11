@@ -38,7 +38,8 @@ The plan is sequenced so the repo stays usable at the end of every phase. Each p
 **Changes:**
 
 - Move `print_md/print_md.py` → `tools/print_md/src/print_md/cli.py`. Add `__init__.py`. `main()` already exists at line 282; no refactor needed, just relocation.
-- Move `print_md/tests/` → `tools/print_md/tests/fixtures/`. These are `.md` fixture files, not pytest modules — putting them under `fixtures/` makes room for actual tests added in Phase 1.5.
+- Move `print_md/tests/fixtures/` → `tools/print_md/tests/fixtures/`.
+- Move `print_md/tests/test_cli.py` → `tools/print_md/tests/test_cli.py` and update its script import to target `print_md.cli` after the source move.
 - Move `print_md/README.md` → `tools/print_md/README.md` (rewritten in phase 2).
 - Delete `print_md/install.sh` and `print_md/requirements.txt` (replaced by `pyproject.toml`).
 - Delete stale `tmp/*` and `!tmp/.gitkeep` lines from `.gitignore` — there is no `tmp/` directory in the tree and the default output already lives at `~/Downloads`.
@@ -68,7 +69,7 @@ The plan is sequenced so the repo stays usable at the end of every phase. Each p
 - `uv run --package print_md print_md tools/print_md/tests/fixtures/minimal.md --no-open --output-dir /tmp/print_md_smoke` produces a PDF without error.
 - `uv run --package print_md print_md --help` exits 0.
 - From a scratch directory: `uv tool install 'git+file:///Users/tom/Projects/obsidian-tools#subdirectory=tools/print_md'` succeeds and `print_md --help` works (when `~/.local/bin` is on `PATH` — `uv tool install` prints a `uv tool update-shell` hint if it isn't).
-- _Note:_ pytest validation deferred to Phase 1.5, which is when tests first exist.
+- _Note:_ pytest validation already exists in the loose-folder layout; Phase 1 keeps it passing through the move.
 
 **Rollback:** revert the PR. No data is destroyed; the old layout is in Git history.
 
@@ -76,19 +77,19 @@ The plan is sequenced so the repo stays usable at the end of every phase. Each p
 
 ## Phase 1.5 — Baseline test suite
 
-**Goal:** `print_md` has enough pytest coverage that CI in Phase 3 has something meaningful to run, and future refactors have a regression net.
+**Goal:** preserve and extend the current loose-folder pytest baseline so CI in Phase 3 has something meaningful to run, and future refactors have a regression net.
 
-**Why a separate phase:** keeps the file-move PR (Phase 1) reviewable on its own, and prevents the "no tests exist" problem from blocking the layout work. Splitting also means a failed test-authoring attempt doesn't stall the workspace migration.
+**Why a separate phase:** keeps the file-move PR (Phase 1) reviewable on its own, and keeps test expansion separate from layout churn.
 
 **Changes:**
 
-- New `tools/print_md/tests/test_cli.py` covering, at minimum:
+- `tools/print_md/tests/test_cli.py` covers, at minimum:
   - `test_help_exits_zero` — invoke `cli.main()` with `['--help']`, assert `SystemExit.code == 0`.
   - `test_missing_file_reports_and_exits_nonzero` — pass a bogus path with `--no-open`, assert exit code reflects failure and stderr mentions "not found".
   - `test_convert_minimal_md_to_temp_dir` — use `fixtures/minimal.md`, pass `--output-dir <tmp> --no-open`, assert the expected `.pdf` is created and non-empty.
   - `test_frontmatter_flag_renders_metadata_block` — use `fixtures/frontmatter_full.md` with `--frontmatter --no-open`, assert PDF is produced (binary content check; we're not parsing the PDF, just confirming no crash on that code path).
   - `test_no_open_flag_suppresses_subprocess` — monkeypatch `subprocess.run`, assert it isn't called when `--no-open` is passed.
-- Add `pytest` to the `[dependency-groups] dev` table in `tools/print_md/pyproject.toml` (see Phase 3 for the group decision).
+- Add `pytest` to the `[dependency-groups] dev` table in `tools/print_md/pyproject.toml` (see Phase 3 for the group decision). This replaces the temporary loose-folder `print_md/requirements-dev.txt`.
 - Add a `tools/print_md/conftest.py` only if a fixture path helper turns out to be needed; otherwise skip.
 
 **Validation:**

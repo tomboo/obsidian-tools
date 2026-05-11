@@ -10,17 +10,17 @@ Findings are ranked by severity. The "Strengths" section at the end exists so th
 
 ## Blockers / things that won't work as written
 
-### B1 — There are no tests
+### B1 — There were no tests
 
-`print_md/tests/` holds five `.md` **fixture** files, not pytest code:
+At the time of review, `print_md/tests/` held five `.md` **fixture** files, not pytest code:
 
 ```
 formatting.md  frontmatter_full.md  minimal.md  multipage.md  no_title_field.md
 ```
 
-The plan asserts in Phase 1: `uv run --package print_md pytest tools/print_md/tests passes`, in Phase 3: "A PR that breaks a `print_md` test fails CI", and PRD §6 S4: "every tool's tests run via `pytest`." None of these are true today.
+The plan asserted in Phase 1: `uv run --package print_md pytest tools/print_md/tests passes`, in Phase 3: "A PR that breaks a `print_md` test fails CI", and PRD §6 S4: "every tool's tests run via `pytest`." None of those were true before the baseline tests were added.
 
-**Fix:** either insert a Phase 1.5 "author baseline tests" between move and CI, or downgrade validation to "`print_md --help` exits 0" until real tests get written. As written, the plan promises a test suite it doesn't own.
+**Status:** resolved in the current loose-folder layout by adding a pytest baseline and moving sample Markdown files under `print_md/tests/fixtures/`. The restructure plan now treats Phase 1.5 as preserving/extending that baseline after the `tools/print_md` migration.
 
 ### B2 — Goal G2 has a macOS GUI-PATH trap
 

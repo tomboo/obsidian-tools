@@ -179,3 +179,17 @@ python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 ```
 Then start each Shell Commands entry with `/ABSOLUTE/PATH/TO/print_md/.venv/bin/python`.
+
+## Development
+
+Install runtime and test dependencies:
+
+```bash
+python3 -m pip install -r requirements-dev.txt
+```
+
+Run the test suite:
+
+```bash
+python3 -m pytest tests
+```
