@@ -33,9 +33,14 @@ print_md chapter_01.md
 print_md chapter_01.md --double-space
 print_md chapter_01.md --frontmatter
 print_md scenes/*.md --output-dir prints/
+print_md chapter_01.md chapter_02.md chapter_03.md --combine
 ```
 
 By default, PDFs are written to `~/Downloads`.
+
+Pass `--combine` to merge multiple input files into one `combined.pdf` in the
+output directory. Each file is rendered independently before stitching, so
+running headers and page numbers reset for each file.
 
 ## Obsidian Shell Commands
 

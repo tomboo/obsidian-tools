@@ -6,6 +6,7 @@ Usage:
     print_md <file.md>
     print_md <file.md> --double-space
     print_md <file.md> --frontmatter
+    print_md <file.md> <file.md> --combine
     print_md scenes/*.md --output-dir prints/
 """
 
@@ -14,6 +15,7 @@ import os
 import subprocess
 import sys
 from datetime import date
+from io import BytesIO
 from pathlib import Path
 
 DEFAULT_OUTPUT_DIR = Path.home() / "Downloads"
@@ -56,6 +58,11 @@ try:
     from weasyprint.text.fonts import FontConfiguration
 except ImportError:
     sys.exit("Missing: pip install weasyprint")
+
+try:
+    from pypdf import PdfReader, PdfWriter
+except ImportError:
+    sys.exit("Missing: pip install pypdf")
 
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
@@ -287,18 +294,63 @@ a {{ color: #1a1a1a; text-decoration: underline; }}
 
 # ── Core conversion ───────────────────────────────────────────────────────────
 
-def convert_file(input_path: Path, output_dir: Path, double_space: bool, show_frontmatter: bool = False) -> Path:
+def render_pdf_bytes(input_path: Path, double_space: bool, show_frontmatter: bool = False) -> bytes:
     filename  = input_path.name
     meta, body = parse_file(input_path)
     body_html = render_body(body)
     html      = build_html(meta, body_html, filename, double_space, show_frontmatter)
 
-    output_path = output_dir / (input_path.stem + ".pdf")
     font_config = FontConfiguration()
-    HTML(string=html, base_url=str(input_path.parent)).write_pdf(
-        str(output_path), font_config=font_config
-    )
+    return HTML(string=html, base_url=str(input_path.parent)).write_pdf(font_config=font_config)
+
+
+def convert_file(input_path: Path, output_dir: Path, double_space: bool, show_frontmatter: bool = False) -> Path:
+    output_path = output_dir / (input_path.stem + ".pdf")
+    output_path.write_bytes(render_pdf_bytes(input_path, double_space, show_frontmatter))
     return output_path
+
+
+def combine_files(
+    input_paths: list[Path],
+    output_dir: Path,
+    double_space: bool,
+    show_frontmatter: bool = False,
+) -> Path:
+    output_path = output_dir / "combined.pdf"
+    writer = PdfWriter()
+    # Keep source streams alive until PdfWriter finishes writing the combined file.
+    streams = []
+
+    for input_path in input_paths:
+        stream = BytesIO(render_pdf_bytes(input_path, double_space, show_frontmatter))
+        streams.append(stream)
+        reader = PdfReader(stream)
+        for page in reader.pages:
+            writer.add_page(page)
+
+    with output_path.open("wb") as output_file:
+        writer.write(output_file)
+
+    return output_path
+
+
+def validate_input_paths(file_args: list[str]) -> tuple[list[Path], int]:
+    valid_paths = []
+    fail = 0
+
+    for file_arg in file_args:
+        path = Path(file_arg)
+        if not path.exists():
+            print(f"  ✗  not found: {file_arg}", file=sys.stderr)
+            fail += 1
+            continue
+        if path.suffix.lower() != ".md":
+            print(f"  ✗  skipping (not .md): {file_arg}", file=sys.stderr)
+            fail += 1
+            continue
+        valid_paths.append(path)
+
+    return valid_paths, fail
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
@@ -311,6 +363,7 @@ def main(argv=None) -> int:
 Examples:
   print_md chapter_01.md
   print_md chapter_01.md --double-space
+  print_md chapter_01.md chapter_02.md --combine
   print_md scenes/*.md --output-dir prints/
         """,
     )
@@ -332,6 +385,11 @@ Examples:
         help=f"Output directory for PDFs (default: {DEFAULT_OUTPUT_DIR})",
     )
     parser.add_argument(
+        "--combine",
+        action="store_true",
+        help="Combine all input files into one PDF named combined.pdf",
+    )
+    parser.add_argument(
         "--no-open",
         dest="open_after",
         action="store_false",
@@ -340,34 +398,47 @@ Examples:
     parser.set_defaults(open_after=True)
     args = parser.parse_args(argv)
 
-    mode = "double-spaced" if args.double_space else "standard"
+    modes = []
+    if args.combine:
+        modes.append("combined")
+    modes.append("double-spaced" if args.double_space else "standard")
+    mode = ", ".join(modes)
     print(f"\nprint_md  [{mode} mode]")
     print("─" * 42)
 
-    ok = fail = 0
-    for file_arg in args.files:
-        path = Path(file_arg)
-        if not path.exists():
-            print(f"  ✗  not found: {file_arg}", file=sys.stderr)
-            fail += 1
-            continue
-        if path.suffix.lower() != ".md":
-            print(f"  ✗  skipping (not .md): {file_arg}", file=sys.stderr)
-            fail += 1
-            continue
+    out_dir = Path(args.output_dir) if args.output_dir else DEFAULT_OUTPUT_DIR
+    valid_paths, fail = validate_input_paths(args.files)
 
-        out_dir = Path(args.output_dir) if args.output_dir else DEFAULT_OUTPUT_DIR
-        out_dir.mkdir(parents=True, exist_ok=True)
+    ok = 0
+    if args.combine:
+        if not fail:
+            out_dir.mkdir(parents=True, exist_ok=True)
+            try:
+                out = combine_files(valid_paths, out_dir, args.double_space, args.frontmatter)
+                ok = len(valid_paths)
+                print(f"  ✓  {len(valid_paths)} file(s)  →  {out}")
+                if args.open_after:
+                    subprocess.run(["open", str(out)], check=False)
+            except Exception as exc:
+                print(f"  ✗  combined.pdf  —  {exc}", file=sys.stderr)
+                fail += 1
+    else:
+        if valid_paths:
+            out_dir.mkdir(parents=True, exist_ok=True)
+        for path in valid_paths:
+            try:
+                out = convert_file(path, out_dir, args.double_space, args.frontmatter)
+                print(f"  ✓  {path.name}  →  {out}")
+                ok += 1
+                if args.open_after:
+                    subprocess.run(["open", str(out)], check=False)
+            except Exception as exc:
+                print(f"  ✗  {path.name}  —  {exc}", file=sys.stderr)
+                fail += 1
 
-        try:
-            out = convert_file(path, out_dir, args.double_space, args.frontmatter)
-            print(f"  ✓  {path.name}  →  {out}")
-            ok += 1
-            if args.open_after:
-                subprocess.run(["open", str(out)], check=False)
-        except Exception as exc:
-            print(f"  ✗  {path.name}  —  {exc}", file=sys.stderr)
-            fail += 1
+    if args.combine and fail and valid_paths:
+        for path in valid_paths:
+            print(f"  -  not combined: {path.name}", file=sys.stderr)
 
     print("─" * 42)
     print(f"  Done — {ok} converted, {fail} failed.\n")
