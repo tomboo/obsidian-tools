@@ -3,19 +3,43 @@
 print_md.py — Convert Obsidian markdown files to print-ready PDFs.
 
 Usage:
-    python print_md.py <file.md>
-    python print_md.py <file.md> --double-space
-    python print_md.py <file.md> --frontmatter
-    python print_md.py scenes/*.md --output-dir prints/
+    print_md <file.md>
+    print_md <file.md> --double-space
+    print_md <file.md> --frontmatter
+    print_md scenes/*.md --output-dir prints/
 """
 
 import argparse
+import os
 import subprocess
 import sys
 from datetime import date
 from pathlib import Path
 
 DEFAULT_OUTPUT_DIR = Path.home() / "Downloads"
+
+
+def _add_macos_homebrew_library_paths() -> None:
+    """Help WeasyPrint find Homebrew's native Pango/GLib libraries."""
+    if sys.platform != "darwin":
+        return
+
+    existing = os.environ.get("DYLD_FALLBACK_LIBRARY_PATH", "")
+    library_paths = [
+        str(path)
+        for path in (Path("/opt/homebrew/lib"), Path("/usr/local/lib"))
+        if path.is_dir()
+    ]
+
+    for path in existing.split(":"):
+        if path and path not in library_paths:
+            library_paths.append(path)
+
+    if library_paths:
+        os.environ["DYLD_FALLBACK_LIBRARY_PATH"] = ":".join(library_paths)
+
+
+_add_macos_homebrew_library_paths()
 
 try:
     import frontmatter
@@ -285,9 +309,9 @@ def main(argv=None) -> int:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python print_md.py chapter_01.md
-  python print_md.py chapter_01.md --double-space
-  python print_md.py scenes/*.md --output-dir prints/
+  print_md chapter_01.md
+  print_md chapter_01.md --double-space
+  print_md scenes/*.md --output-dir prints/
         """,
     )
     parser.add_argument("files", nargs="+", help="Markdown file(s) to convert")

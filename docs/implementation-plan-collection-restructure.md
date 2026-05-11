@@ -2,7 +2,7 @@
 
 Tracking issue: [#4](https://github.com/tomboo/obsidian-tools/issues/4)
 PRD: [prd-collection-restructure.md](./prd-collection-restructure.md)
-Status: Draft
+Status: Phase 0/1 package scaffold in progress in [#7](https://github.com/tomboo/obsidian-tools/issues/7)
 
 The plan is sequenced so the repo stays usable at the end of every phase. Each phase is a single PR.
 
@@ -46,7 +46,7 @@ The plan is sequenced so the repo stays usable at the end of every phase. Each p
 - New `tools/print_md/pyproject.toml`:
   ```toml
   [project]
-  name = "print_md"
+  name = "print-md"
   version = "0.2.0"
   requires-python = ">=3.11"
   dependencies = [
@@ -66,8 +66,8 @@ The plan is sequenced so the repo stays usable at the end of every phase. Each p
 
 **Validation:**
 - `uv sync` from the repo root resolves and installs `print_md` editable.
-- `uv run --package print_md print_md tools/print_md/tests/fixtures/minimal.md --no-open --output-dir /tmp/print_md_smoke` produces a PDF without error.
-- `uv run --package print_md print_md --help` exits 0.
+- `uv run --package print-md print_md tools/print_md/tests/fixtures/minimal.md --no-open --output-dir /tmp/print_md_smoke` produces a PDF without error.
+- `uv run --package print-md print_md --help` exits 0.
 - From a scratch directory: `uv tool install 'git+file:///Users/tom/Projects/obsidian-tools#subdirectory=tools/print_md'` succeeds and `print_md --help` works (when `~/.local/bin` is on `PATH` — `uv tool install` prints a `uv tool update-shell` hint if it isn't).
 - _Note:_ pytest validation already exists in the loose-folder layout; Phase 1 keeps it passing through the move.
 
@@ -93,7 +93,7 @@ The plan is sequenced so the repo stays usable at the end of every phase. Each p
 - Add a `tools/print_md/conftest.py` only if a fixture path helper turns out to be needed; otherwise skip.
 
 **Validation:**
-- `uv run --package print_md pytest tools/print_md/tests` runs all five tests green on a clean dev machine.
+- `uv run --package print-md pytest tools/print_md/tests` runs all five tests green on a clean dev machine.
 - Tests do not require network access or write outside the pytest tmp dir.
 
 **Rollback:** revert the PR. Removing tests does not affect the runtime.
