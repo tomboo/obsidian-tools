@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      print_md: ${{ steps.filter.outputs.print_md }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Detect changed paths
+        id: filter
+        uses: dorny/paths-filter@v4
+        with:
+          filters: |
+            print_md:
+              - ".github/workflows/ci.yml"
+              - "pyproject.toml"
+              - "uv.lock"
+              - "tools/print_md/**"
+
+  print-md:
+    name: print_md
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.print_md == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.1.0
+        with:
+          enable-cache: true
+
+      - name: Install WeasyPrint native dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libpango-1.0-0 libpangoft2-1.0-0
+
+      - name: Sync print_md
+        run: uv sync --locked --package print-md --group dev
+
+      - name: Lint print_md
+        run: uv run --package print-md ruff check tools/print_md
+
+      - name: Test print_md
+        run: uv run --package print-md pytest tools/print_md/tests

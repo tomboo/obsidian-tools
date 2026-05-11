@@ -2,7 +2,7 @@
 
 Tracking issue: [#4](https://github.com/tomboo/obsidian-tools/issues/4)
 PRD: [prd-collection-restructure.md](./prd-collection-restructure.md)
-Status: Phase 0/1 package scaffold in progress in [#7](https://github.com/tomboo/obsidian-tools/issues/7)
+Status: Phase 0/1 package scaffold complete; Phase 3 CI tracked in [#9](https://github.com/tomboo/obsidian-tools/issues/9)
 
 The plan is sequenced so the repo stays usable at the end of every phase. Each phase is a single PR.
 
