@@ -1,34 +1,24 @@
-import importlib.util
 from pathlib import Path
 
 import pytest
+from print_md import cli
 
 
-PRINT_MD_DIR = Path(__file__).resolve().parents[1]
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 
 
-@pytest.fixture()
-def print_md_module():
-    spec = importlib.util.spec_from_file_location("print_md_cli", PRINT_MD_DIR / "print_md.py")
-    module = importlib.util.module_from_spec(spec)
-    assert spec.loader is not None
-    spec.loader.exec_module(module)
-    return module
-
-
-def test_help_exits_zero(print_md_module, capsys):
+def test_help_exits_zero(capsys):
     with pytest.raises(SystemExit) as excinfo:
-        print_md_module.main(["--help"])
+        cli.main(["--help"])
 
     assert excinfo.value.code == 0
     assert "Convert Obsidian markdown files" in capsys.readouterr().out
 
 
-def test_missing_file_reports_and_exits_nonzero(print_md_module, tmp_path, capsys):
+def test_missing_file_reports_and_exits_nonzero(tmp_path, capsys):
     missing = tmp_path / "missing.md"
 
-    result = print_md_module.main([str(missing), "--no-open"])
+    result = cli.main([str(missing), "--no-open"])
 
     captured = capsys.readouterr()
     assert result == 1
@@ -36,8 +26,8 @@ def test_missing_file_reports_and_exits_nonzero(print_md_module, tmp_path, capsy
     assert "1 file(s) failed" in captured.err
 
 
-def test_convert_minimal_md_to_temp_dir(print_md_module, tmp_path):
-    result = print_md_module.main(
+def test_convert_minimal_md_to_temp_dir(tmp_path):
+    result = cli.main(
         [
             str(FIXTURES / "minimal.md"),
             "--output-dir",
@@ -52,8 +42,8 @@ def test_convert_minimal_md_to_temp_dir(print_md_module, tmp_path):
     assert output.stat().st_size > 0
 
 
-def test_frontmatter_flag_renders_metadata_block(print_md_module, tmp_path):
-    result = print_md_module.main(
+def test_frontmatter_flag_renders_metadata_block(tmp_path):
+    result = cli.main(
         [
             str(FIXTURES / "frontmatter_full.md"),
             "--frontmatter",
@@ -69,15 +59,15 @@ def test_frontmatter_flag_renders_metadata_block(print_md_module, tmp_path):
     assert output.stat().st_size > 0
 
 
-def test_no_open_flag_suppresses_subprocess(print_md_module, tmp_path, monkeypatch):
+def test_no_open_flag_suppresses_subprocess(tmp_path, monkeypatch):
     calls = []
 
     def fake_run(*args, **kwargs):
         calls.append((args, kwargs))
 
-    monkeypatch.setattr(print_md_module.subprocess, "run", fake_run)
+    monkeypatch.setattr(cli.subprocess, "run", fake_run)
 
-    result = print_md_module.main(
+    result = cli.main(
         [
             str(FIXTURES / "minimal.md"),
             "--output-dir",

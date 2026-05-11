@@ -6,7 +6,7 @@ Last updated: 2026-05-10
 
 ## 1. Problem
 
-The repo today holds a single tool (`print_md/`) as a loose folder with its own `install.sh`, `requirements.txt`, and a README that walks users through copying absolute paths into Obsidian's Shell Commands plugin. This works for one script, but it doesn't generalise:
+Before this restructure, the repo held a single tool (`print_md/`) as a loose folder with its own `install.sh`, `requirements.txt`, and a README that walked users through copying absolute paths into Obsidian's Shell Commands plugin. This worked for one script, but it did not generalise:
 
 - Adding a second tool means duplicating the install-script / venv / README pattern.
 - Each tool would need its own `.venv` in-repo, with users juggling absolute Python paths per tool.
